@@ -17,12 +17,20 @@ public class WeatherForecastController : ControllerBase
         _logger = logger;
     }
 
-    [HttpGet("{dayOffset?}", Name = "GetWeatherForecast")]
-    public IEnumerable<WeatherForecast> Get(int? dayOffset)
+    [HttpGet(Name = "GetWeatherForecast")]
+    public IEnumerable<WeatherForecast> Get()
     {
-        var validDayOffset = dayOffset.HasValue && dayOffset > 0;
-        var start = dayOffset.HasValue && validDayOffset ? dayOffset.Value : 1;
-        var count = validDayOffset ? 1 : 5;
+        return this.Get(1, 5);
+    }
+
+    [HttpGet("{dayOffset}", Name = "GetWeatherForecastForOneDay")]
+    public IEnumerable<WeatherForecast> Get(int dayOffset)
+    {
+        return dayOffset > 0 ? this.Get(dayOffset, 1) : this.Get();
+    }
+
+    private IEnumerable<WeatherForecast> Get(int start, int count)
+    {
         return Enumerable.Range(start, count).Select(index => new WeatherForecast
         {
             Date = DateTime.Now.AddDays(index),
